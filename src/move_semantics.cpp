@@ -37,10 +37,12 @@
 // Function that takes in a rvalue reference as an argument.
 // It seizes ownership of the vector passed in, appends 3 to
 // the back of it, and prints the values in the vector.
-void move_add_three_and_print(std::vector<int> &&vec) {
+void move_add_three_and_print(std::vector<int> &&vec)
+{
   std::vector<int> vec1 = std::move(vec);
   vec1.push_back(3);
-  for (const int &item : vec1) {
+  for (const int &item : vec1)
+  {
     std::cout << item << " ";
   }
   std::cout << "\n";
@@ -51,15 +53,18 @@ void move_add_three_and_print(std::vector<int> &&vec) {
 // and prints the values in the vector. Notably, it does not seize
 // ownership of the vector. Therefore, the argument passed in would
 // still be usable in the callee context.
-void add_three_and_print(std::vector<int> &&vec) {
+void add_three_and_print(std::vector<int> &&vec)
+{
   vec.push_back(3);
-  for (const int &item : vec) {
+  for (const int &item : vec)
+  {
     std::cout << item << " ";
   }
   std::cout << "\n";
 }
 
-int main() {
+int main()
+{
   // Take this expression. Note that 'a' is a lvalue, since it's a variable that
   // refers to a specific space in memory (where 'a' is stored). 10 is a rvalue.
   int a = 10;
@@ -73,8 +78,16 @@ int main() {
 
   // Rvalue references are references that refer to the data itself, as opposed
   // to a lvalue. Calling std::move on a lvalue (such as stealing_ints) will
-  // result in the expression being cast to a rvalue reference.
+  // result in the expression being cast to a rvalue reference. The line below
+  // is just an example and is not an actual pattern you're too likely to encounter:
+  // Exercise for students: can you explain why not?
   std::vector<int> &&rvalue_stealing_ints = std::move(stealing_ints);
+
+  for (auto &i : rvalue_stealing_ints)
+  {
+    std::cout << " " << i << " ";
+  }
+  std::cout << std::endl;
 
   // However, note that after this, it is still possible to access the data in
   // stealing_ints, since that is the lvalue that owns the data, not
@@ -88,12 +101,16 @@ int main() {
   // data in int_array2. It no longer belongs to the int_array2 lvalue.
   std::vector<int> int_array2 = {1, 2, 3, 4};
   std::cout << "Calling move_add_three_and_print...\n";
-  move_add_three_and_print(std::move(int_array2));
+
+  std::vector<int> &&rvalue_int_array2 = std::move(int_array2);
 
   // It would be unwise to try to do anything with int_array2 here. Uncomment
   // the code to try it out! (On my machine, this segfaults...) NOTE: THIS MIGHT
-  // WORK FOR YOU. THIS DOES NOT MEAN THAT THIS IS WISE TO DO! 
+  // WORK FOR YOU. THIS DOES NOT MEAN THAT THIS IS WISE TO DO!
   // std::cout << int_array2[1] << std::endl;
+
+  // Here's what I got:
+  // Segmentation fault (core dumped)
 
   // If we don't move the lvalue in the caller context to any lvalue in the
   // callee context, then effectively the function treats the rvalue reference
@@ -102,6 +119,11 @@ int main() {
   std::vector<int> int_array3 = {1, 2, 3, 4};
   std::cout << "Calling add_three_and_print...\n";
   add_three_and_print(std::move(int_array3));
+  for (auto &i : int_array3)
+  {
+    std::cout << i << " ";
+  }
+  std::cout << std::endl;
 
   // As seen here, we can print from this array.
   std::cout << "Printing from int_array3: " << int_array3[1] << std::endl;

@@ -16,7 +16,8 @@
 // A function that takes an int reference and adds 3 to it.
 void add_three(int &a) { a = a + 3; }
 
-int main() {
+int main()
+{
   // Take this expression. Note that b has type int& (int reference),
   // since it is a reference to a. This means that a and b both refer to the
   // same data. You can declare references by setting your variables type via
@@ -33,6 +34,10 @@ int main() {
   // context will change value.
   add_three(a);
   std::cout << "a is " << a << std::endl;
+
+  // my notes:
+  // printing b now should show that this produces the value plus 3
+  std::cout << "b is " << b << std::endl;
 
   return 0;
 }
