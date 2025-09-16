@@ -126,3 +126,5 @@ int main() {
 
   return 0;
 }
+
+// NOTE: ok this shit is kind of just what i expected so w/e

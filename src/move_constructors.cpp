@@ -11,6 +11,11 @@
 // where the method is called. In this file, we will explore implementing
 // and using move constructors and move assignment operators.
 
+// Nice! so it sounds like if i'm dealing with complex objects, i will need move constructors for them
+// then i'll need to cast it to an rvalue and pass it into a function that takes an rvalue reference
+// as long as i implement the move constructor correctly, i should be good
+// this means move constructs are IMPORTANT TO WRITE UNIT TESTS FOR MAYBE
+
 // Includes std::cout (printing) for demo purposes.
 #include <iostream>
 // Includes the utility header for std::move.
@@ -31,10 +36,14 @@
 // means that once an Person object is instantiated, it cannot be copied. It
 // must be moved from one lvalue to another. Classes without copy operators are
 // useful when it is imperative to only have one defined instance of a class.
+// NOTE: so it sounds like NOT implementing a copy constructor is essentially how you do static classes in C++
 // For instance, if a class manages a dynamically allocated memory block, then
 // creating more than one instance of this class, without proper handling, can
 // result in double deletion or memory leaks.
-class Person {
+// NOTE: i don't know that i understand this example: the double deletion would only happen if you try to allocate the same memory twice
+// when would you do that?
+class Person
+{
 public:
   Person() : age_(0), nicknames_({}), valid_(true) {}
 
@@ -56,14 +65,16 @@ public:
   // move the class instance unless copying is necessary.
   Person(Person &&person)
       : age_(person.age_), nicknames_(std::move(person.nicknames_)),
-        valid_(true) {
+        valid_(true)
+  {
     std::cout << "Calling the move constructor for class Person.\n";
     // The moved object's validity tag is set to false.
     person.valid_ = false;
   }
 
   // Move assignment operator for class Person.
-  Person &operator=(Person &&other) {
+  Person &operator=(Person &&other)
+  {
     std::cout << "Calling the move assignment operator for class Person.\n";
     age_ = other.age_;
     nicknames_ = std::move(other.nicknames_);
@@ -87,10 +98,14 @@ public:
   // hood is actually the one pointing to the nicknames_ vector's memory.
   std::string &GetNicknameAtI(size_t i) { return nicknames_[i]; }
 
-  void PrintValid() {
-    if (valid_) {
+  void PrintValid()
+  {
+    if (valid_)
+    {
       std::cout << "Object is valid." << std::endl;
-    } else {
+    }
+    else
+    {
       std::cout << "Object is invalid." << std::endl;
     }
   }
@@ -103,7 +118,8 @@ private:
   bool valid_;
 };
 
-int main() {
+int main()
+{
   // Let's see how move constructors and move assignment operators can be
   // implemented and used in a class. First, we create an instance of the class
   // Person. Note that the object andy is a valid object.
@@ -134,7 +150,7 @@ int main() {
   std::cout << "Printing andy1's validity: ";
   andy1.PrintValid();
 
-  // However, note that because the copy assignment operator is deleted, this code 
+  // However, note that because the copy assignment operator is deleted, this code
   // will not compile. The first line of this code constructs a new object via the
   // default constructor, and the second line invokes the copy assignment operator
   // to re-initialize andy3 with the deep-copied contents of andy2. Try uncommenting
@@ -146,5 +162,27 @@ int main() {
   // uncommenting this code to see the resulting compiler errors.
   // Person andy4(andy2);
 
+  // NOTE: OMG so like unless i really WANT a copy as long as i always create classes
+  // and avoid implementing copy operator, then i can get compile time
+  // guarantees against accidental copies
+
   return 0;
 }
+
+/*
+ * Summary:
+ *    - for expensive objects, avoid implementing copy
+ *    - maybe independently test move operator for correctness
+ *    - seems like more classes the better? then you get more compile time checks
+ *    - (easier to avoid accidnetal copy for example)
+ *    - always just use const references for getters
+ *    - use mutable references for getters you want to modify such as mut_get_xyz...
+ *    - but if you're doing that then you're fucking around with someone else's shit so
+ *    -     you only should be using mutable references when you're NOT DOING any
+ *    -     construction OR destruction but c++ doesn't tell you that explicitly because this is
+ *    -     a dogshit language
+ *    - lol c++ is like if python was a systems language. inconsistent, dogshit,
+ *    - spineless, and pointlessly conservative due to bAcKwArDs CoMpaTiBiLItY
+ *        -- it's basically software MAGA or software conservatism. i do not respect
+ *        a language so unprinicpled
+ */

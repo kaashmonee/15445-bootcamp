@@ -18,12 +18,14 @@
 // differences between the class and typename keywords. This blog article covers
 // this difference, but you won't need to know this for the class:
 // https://mariusbancila.ro/blog/2021/03/15/typename-or-class/
-template <typename T> T add(T a, T b) { return a + b; }
+template <typename T>
+T add(T a, T b) { return a + b; }
 
 // It is possible to pass multiple type names via templates into functions.
 // This function will print both of these values out.
-template<typename T, typename U>
-void print_two_values(T a, U b) {
+template <typename T, typename U>
+void print_two_values(T a, U b)
+{
   std::cout << a << " and " << b << std::endl;
 }
 
@@ -31,25 +33,48 @@ void print_two_values(T a, U b) {
 // different things for different types. Take the following contrived example,
 // which prints the type if its a float type, but just prints hello world for
 // all other types.
-template <typename T> void print_msg() { std::cout << "Hello world!\n"; }
+template <typename T>
+void print_msg() { std::cout << "Hello world!\n"; }
 
 // Specialized templated function, specialized on the float type.
-template <> void print_msg<float>() {
+template <>
+void print_msg<float>()
+{
   std::cout << "print_msg called with float type!\n";
 }
 
 // Lastly, template parameters do not have to be classes. Take this basic (yet
 // very contrived) function that takes in a bool as a template parameter and
 // does different things to the argument depending on the boolean argument.
-template <bool T> int add3(int a) {
-  if (T) {
+template <bool T>
+int add3(int a)
+{
+  if (T)
+  {
     return a + 3;
   }
 
   return a;
 }
 
-int main() {
+// NOTE: here are some examples where template params are SUUUUUPER USEFUL
+// basically if you know some shit about something AT compile time, you should totally just like
+// have that be a template parameter: (like page sizes for example: 8kb or whatever)
+// template <int N>
+// struct Factorial {
+//     static constexpr int value = N * Factorial<N-1>::value;
+// };
+
+// template <>
+// struct Factorial<0> {
+//     static constexpr int value = 1;
+// };
+
+// // Usage:
+// constexpr int result = Factorial<5>::value;  // Computed at compile time
+
+int main()
+{
   // First, let's see the add function called on both ints and floats.
   std::cout << "Printing add<int>(3, 5): " << add<int>(3, 5) << std::endl;
   std::cout << "Printing add<float>(2.8, 3.7): " << add<float>(2.8, 3.7)
@@ -88,3 +113,28 @@ int main() {
 
   return 0;
 }
+
+// NOTE: lol interestingly i ran some benchmarks...
+// the templated code ran slower than the contrived example above
+// so actually not only is the contrived example above super contrived,
+// it's actually an anti-pattern and something you SHOULDN'T do -- i don't think it's
+// a great example for buidling a good intuition for what should and shouldn't be done
+// Boolean Parameter Benchmarks (1000 iterations on array of 100000 elements):
+
+// Template with DoCheck=true: 33.7282 ms
+
+// Runtime with doCheck=true: 14.592 ms
+
+//   Improvement: -131.141% faster with template
+
+// Template with DoCheck=false: 17.6207 ms
+
+// Runtime with doCheck=false: 14.6132 ms
+
+//   Improvement: -20.581% faster with template
+
+// Unroll factor 1: 11.8006 ms (baseline)
+
+// Unroll factor 2: 11.9554 ms (-1.31182% improvement)
+
+// Unroll factor 4: 11.8346 ms (-0.288486% improvement)

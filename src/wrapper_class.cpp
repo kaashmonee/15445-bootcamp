@@ -137,3 +137,7 @@ int main() {
 
   return 0;
 }
+
+// NOTE: NICE!!!! this RAII technique is what i had sort of intuited and wanted
+// to do yesterday. nice evidence/reinforcement of my understanding of what's 
+// going on here in c++
