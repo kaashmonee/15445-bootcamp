@@ -159,3 +159,11 @@ int main() {
 
   return 0;
 }
+
+// summary: 
+// this seems like a good way to separate between mutable and immutable 
+// getters. like for example mut::get(some_bullshit) for some 
+// container will return a non-const reference but get(some_bullshit)
+// will be a const reference. that way, i can get like different naming
+// without including it in the function itself. though outside of like 
+// just syntax sugar, i don't know how useful this is.

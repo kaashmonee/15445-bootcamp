@@ -27,13 +27,16 @@
 #include <vector>
 
 // Basic point class. (Will use later)
-class Point {
+class Point
+{
 public:
-  Point() : x_(0), y_(0) {
+  Point() : x_(0), y_(0)
+  {
     std::cout << "Default constructor for the Point class is called.\n";
   }
 
-  Point(int x, int y) : x_(x), y_(y) {
+  Point(int x, int y) : x_(x), y_(y)
+  {
     std::cout << "Custom constructor for the Point class is called.\n";
   }
 
@@ -41,7 +44,8 @@ public:
   inline int GetY() const { return y_; }
   inline void SetX(int x) { x_ = x; }
   inline void SetY(int y) { y_ = y; }
-  void PrintPoint() const {
+  void PrintPoint() const
+  {
     std::cout << "Point value is (" << x_ << ", " << y_ << ")\n";
   }
 
@@ -53,14 +57,17 @@ private:
 // A utility function to print the elements of an int vector. The code for this
 // should be understandable and similar to the code iterating through elements
 // of a vector in the main function.
-void print_int_vector(const std::vector<int> &vec) {
-  for (const int &elem : vec) {
+void print_int_vector(const std::vector<int> &vec)
+{
+  for (const int &elem : vec)
+  {
     std::cout << elem << " ";
   }
   std::cout << "\n";
 }
 
-int main() {
+int main()
+{
   // We can declare a Point vector with the following syntax.
   std::vector<Point> point_vector;
 
@@ -86,7 +93,8 @@ int main() {
   // iterate through it's indices via the following for loop. Note that it is
   // good practice to use an unsigned int type for array or vector indexes.
   std::cout << "Printing the items in point_vector:\n";
-  for (size_t i = 0; i < point_vector.size(); ++i) {
+  for (size_t i = 0; i < point_vector.size(); ++i)
+  {
     point_vector[i].PrintPoint();
   }
 
@@ -94,15 +102,20 @@ int main() {
   // references to iterate through it so that the items we iterate through are
   // the items in the original vector. If we iterate through references of the
   // vector elements, we can also modify the data in the vector.
-  for (Point &item : point_vector) {
+  for (Point &item : point_vector)
+  {
     item.SetY(445);
   }
 
   // Let's see if our changes went through. Note that I use the const reference
   // syntax to ensure that the data I'm accessing is read only.
-  for (const Point &item : point_vector) {
+  for (const Point &item : point_vector)
+  {
     item.PrintPoint();
   }
+
+  // Generally, it seems like we have to think a lot about whether or not we're
+  // modifying or not an object which is really good to know
 
   // Now, we show how to erase elements from a vector. First, we can erase
   // elements by their position via the erase function. For instance, if we want
@@ -112,7 +125,7 @@ int main() {
   // is an object that points to an element within the container. For instance,
   // int_vector.begin() is an iterator object that points to the first element
   // in the vector. The vector iterator also has a plus operator that takes
-  // a vector iterator and an integer. The plus operator will increase the 
+  // a vector iterator and an integer. The plus operator will increase the
   // index of the element that the iterator is pointing to by the number passed
   // in. Therefore, int_vector.begin() + 2 is pointing to the third element in
   // the vector, or the element at int_vector[2].
@@ -121,7 +134,9 @@ int main() {
   int_vector.erase(int_vector.begin() + 2);
   std::cout << "Printing the elements of int_vector after erasing "
                "int_vector[2] (which is 2)\n";
+  // so does this also change the size?
   print_int_vector(int_vector);
+  std::cout << "vector size: " << int_vector.size() << std::endl;
 
   // We can also erase elements in a range via the erase function. If we want to
   // delete elements starting from index 1 to the end of the array, then we can
@@ -144,7 +159,7 @@ int main() {
   // to the beginning and the end of a vector respectively. Therefore, when we
   // pass these in, we are implying that we want the whole vector filtered.
   // The third argument is a conditional lambda type (see the std::function
-  // library in C++, or at 
+  // library in C++, or at
   // https://en.cppreference.com/w/cpp/utility/functional/function), that takes
   // in one argument, which is supposed to represent each element in the vector
   // that we are filtering. This function should return a boolean that is true
@@ -156,14 +171,21 @@ int main() {
   // remove_if has partitioned away to be deleted, up to the end of the vector.
   // This outer erase takes a range argument, as we saw in the previous example.
   point_vector.erase(
+      // NOTE: oh my god...like what the fuck happens if i pass variables inside a
+      // lambda closure. like would i have to use a const ref if it's read only
+      // but if it's doing destrcutive things, then perform a move, then clean
+      // up those resources. so bavsically it sounds like it's best to have CRUD functions
+      // for most somewhat more complicated objects
       std::remove_if(point_vector.begin(), point_vector.end(),
-                     [](const Point &point) { return point.GetX() == 37; }),
+                     [](const Point &point) -> bool
+                     { return point.GetX() == 37; }),
       point_vector.end());
 
   // After calling remove here, we should see that three elements remain in our
   // point vector. Only the one with value (37, 445) is deleted.
   std::cout << "Printing the point_vector after (37, 445) is erased:\n";
-  for (const Point &item : point_vector) {
+  for (const Point &item : point_vector)
+  {
     item.PrintPoint();
   }
 
@@ -172,3 +194,10 @@ int main() {
 
   return 0;
 }
+
+// summary:
+// - emplace faster than pushback though not sure if i give a shit
+// - you can filter stuff by using a lambda with the opposite of the boolean
+//   predicate you'd use for filtering (nice! i like functional c++). though
+//   i have no idea what the fuck is happening under the hood with functional c++
+//   especially w.r.t ownership semantics

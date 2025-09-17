@@ -24,7 +24,8 @@
 // Includes the set container library header.
 #include <set>
 
-int main() {
+int main()
+{
   // We can declare a int set with the following syntax.
   std::set<int> int_set;
 
@@ -32,11 +33,13 @@ int main() {
   // through 10 in our set. There also exists an emplace function that allows
   // the user to construct objects in place for set insertion. We cover emplace
   // more in vectors.cpp (line 73).
-  for (int i = 1; i <= 5; ++i) {
+  for (int i = 1; i <= 5; ++i)
+  {
     int_set.insert(i);
   }
 
-  for (int i = 6; i <= 10; ++i) {
+  for (int i = 6; i <= 10; ++i)
+  {
     int_set.emplace(i);
   }
 
@@ -47,17 +50,20 @@ int main() {
   // iterator value is equivalent to the end iterator value, then this would
   // imply that the element does not exist.
   std::set<int>::iterator search = int_set.find(2);
-  if (search != int_set.end()) {
+  if (search != int_set.end())
+  {
     std::cout << "Element 2 is in int_set.\n";
   }
 
   // We can also use the count function, which returns the number of elements
   // with the specified key in the set.
-  if (int_set.count(11) == 0) {
+  if (int_set.count(11) == 0)
+  {
     std::cout << "Element 11 is not in the set.\n";
   }
 
-  if (int_set.count(3) == 1) {
+  if (int_set.count(3) == 1)
+  {
     std::cout << "Element 3 is in the set.\n";
   }
 
@@ -66,8 +72,19 @@ int main() {
   // set, we can call:
   int_set.erase(4);
 
+  std::cout << "trying to erase the element 4 even though it already should not be in teh set" << std::endl;
+  // NOTE: is this erase idempotent?
+  int elements_erased = int_set.erase(4);
+
+  // NOTE:
+  // This line should print 0
+  // So it seems like erase is idempotent
+  // But each call to erase to FIND the element costs logn time
+  std::cout << "number of elements erased: " << elements_erased << std::endl;
+
   // We confirm that 4 isn't in the set anymore.
-  if (int_set.count(4) == 0) {
+  if (int_set.count(4) == 0)
+  {
     std::cout << "Element 4 is not in the set.\n";
   }
 
@@ -75,10 +92,15 @@ int main() {
   // pass in an iterator to the erase function. Let's say we want to erase the
   // first element from the set. We can pass in an iterator that points to the
   // first element from the set to the erase function.
+
+  // This is quite nice: this means that we don't have to FIND the 2nd largest
+  // or something like that...we can just use an iterator to do it and leverage the
+  // plus operator
   int_set.erase(int_set.begin());
 
   // We confirm that 1 isn't in the set anymore.
-  if (int_set.count(1) == 0) {
+  if (int_set.count(1) == 0)
+  {
     std::cout << "Element 1 is not in the set.\n";
   }
 
@@ -88,7 +110,8 @@ int main() {
   int_set.erase(int_set.find(9), int_set.end());
 
   // We confirm that 9 and 10 aren't in the set anymore.
-  if (int_set.count(9) == 0 && int_set.count(10) == 0) {
+  if (int_set.count(9) == 0 && int_set.count(10) == 0)
+  {
     std::cout << "Elements 9 and 10 are not in the set.\n";
   }
 
@@ -96,8 +119,13 @@ int main() {
   // iterate through a set via indexes of any kind.
   std::cout << "Printing the elements of the iterator:\n";
   for (std::set<int>::iterator it = int_set.begin(); it != int_set.end();
-       ++it) {
+       ++it)
+  {
     // We can access the element itself by dereferencing the iterator.
+    // NOTE:
+    // so this is an rvalue expression *it but what happens if we assign it?
+    // then we have to probably do something like std::move(*it)? but
+    // actually no, is that already an rvalue ref?
     std::cout << *it << " ";
   }
   std::cout << "\n";
@@ -105,7 +133,8 @@ int main() {
   // Just like std::vector, we can also iterate through the set via a for-each
   // loop.
   std::cout << "Printing the elements of the iterator with a for-each loop:\n";
-  for (const int &elem : int_set) {
+  for (const int &elem : int_set)
+  {
     std::cout << elem << " ";
   }
   std::cout << "\n";
@@ -115,3 +144,9 @@ int main() {
 
   return 0;
 }
+
+// Summary:
+// - iterators are super helpful with dealing iwht sets
+// - but when dealing with set entities, i don't completely know how to
+//   do that safely and efficiently
+//   like if i want to pass it around etc

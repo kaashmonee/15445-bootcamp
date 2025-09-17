@@ -177,3 +177,10 @@ int main() {
 
   return 0;
 }
+
+// summary: 
+// ok this kind of behaves as expected, but the differnece is that dereferencing an interator
+// means that you have to implement the dreference and it can return something menaingful
+// not like the underlying data of the pointer or reference or something like in go
+// though i do wonder: does it make sense to have wrapper classes for STL containers?
+// STL containers already have move implemented probably

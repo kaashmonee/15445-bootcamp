@@ -23,7 +23,8 @@
 // Includes std::make_pair.
 #include <utility>
 
-int main() {
+int main()
+{
   // The std::unordered_map is a data structure that contains key-value pairs
   // with unique keys. Essentially, this means you can use it as a hash table
   // in your code.
@@ -57,13 +58,16 @@ int main() {
   // returns an iterator pointing to the end of the unordered map container
   // otherwise.
   std::unordered_map<std::string, int>::iterator result = map.find("jignesh");
-  if (result != map.end()) {
+  if (result != map.end())
+  {
     // This is one way of accessing the key/value pair from the iterator.
     std::cout << "Found key " << result->first << " with value "
               << result->second << std::endl;
 
     // Dereferencing the iterator is another method of accessing the key/value
     // pair from the iterator.
+    // NOTE: yeah wonder what happens here with dereference...like does this
+    // result in a copy?
     std::pair<std::string, int> pair = *result;
     std::cout << "DEREF: Found key " << pair.first << " with value "
               << pair.second << std::endl;
@@ -72,7 +76,8 @@ int main() {
   // The count function returns the number of elements in an unordered map with
   // the specified key in the unordered map.
   size_t count = map.count("spam");
-  if (count == 1) {
+  if (count == 1)
+  {
     std::cout
         << "A key-value pair with key spam exists in the unordered map.\n";
   }
@@ -82,7 +87,8 @@ int main() {
   map.erase("eggs");
 
   // We confirm that the eggs/2 key-value pair isn't in the map anymore.
-  if (map.count("eggs") == 0) {
+  if (map.count("eggs") == 0)
+  {
     std::cout << "Key-value pair with key eggs does not exist in the unordered "
                  "map.\n";
   }
@@ -95,7 +101,8 @@ int main() {
   map.erase(map.find("garlic rice"));
 
   // We confirm that garlic rice/3 key-value pair isn't in the map anymore.
-  if (map.count("garlic rice") == 0) {
+  if (map.count("garlic rice") == 0)
+  {
     std::cout << "Key-value pair with key garlic rice does not exist in the "
                  "unordered map.\n";
   }
@@ -105,7 +112,8 @@ int main() {
   // kind.
   std::cout << "Printing the elements of the iterator:\n";
   for (std::unordered_map<std::string, int>::iterator it = map.begin();
-       it != map.end(); ++it) {
+       it != map.end(); ++it)
+  {
     // We can access the element itself by dereferencing the iterator.
     std::cout << "(" << it->first << ", " << it->second << "), ";
   }
@@ -114,7 +122,8 @@ int main() {
   // Just like std::vector, we can also iterate through the unordered map
   // via a for-each loop.
   std::cout << "Printing the elements of the iterator with a for-each loop:\n";
-  for (const std::pair<const std::string, int> &elem : map) {
+  for (const std::pair<const std::string, int> &elem : map)
+  {
     std::cout << "(" << elem.first << ", " << elem.second << "), ";
   }
   std::cout << "\n";
@@ -124,3 +133,17 @@ int main() {
 
   return 0;
 }
+
+// NOTE:
+// in general here is what you do when dealing wiht c++ collections:
+// 1. if you're just accessing, then just do const reference
+//    e.g.: const HeavyObject& z = it->second;
+// 2. if you're accessing and updating, then just do regular reference
+//    e.g.: HeavyObject &z = it->second;
+// 3. if you're accessing and then DELETING, THEN you need to manage your memory
+//    so you'd need to do something like
+//    these needs TWO OPERATIONS: move AND deleting from the map bc that memory is garbage
+//    e.g.:
+//    HeavyObject &z = std::move(it->second);
+//    map.erase(it);
+// YAYYYY! i now understand how to deal with large objects in collections!
