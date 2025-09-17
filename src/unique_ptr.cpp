@@ -27,7 +27,8 @@
 #include <utility>
 
 // Basic point class. (Will use later)
-class Point {
+class Point
+{
 public:
   Point() : x_(0), y_(0) {}
   Point(int x, int y) : x_(x), y_(y) {}
@@ -45,7 +46,8 @@ private:
 // 445.
 void SetXTo445(std::unique_ptr<Point> &ptr) { ptr->SetX(445); }
 
-int main() {
+int main()
+{
   // This is how to initialize an empty unique pointer of type
   // std::unique_ptr<Point>.
   std::unique_ptr<Point> u1;
@@ -60,12 +62,14 @@ int main() {
   // its objects to a boolean type, and so this function is called whenever we
   // treat the std::unique_ptr as a boolean. For instance, this can be used in
   // the following example.
-  if (u1) {
+  if (u1)
+  {
     // This won't print because u1 is empty.
     std::cout << "u1's value of x is " << u1->GetX() << std::endl;
   }
 
-  if (u2) {
+  if (u2)
+  {
     // This will print because u2 is not empty, and contains a managed Point
     // instance.
     std::cout << "u2's value of x is " << u2->GetX() << std::endl;
@@ -79,6 +83,7 @@ int main() {
 
   // Since instances of std::unique_ptr can have only one owner, it has no copy
   // constructor. Therefore, this code won't compile. Uncomment it to try!
+  // NOTE: woah! nice! i guessed this!
   // std::unique_ptr<Point> u4 = u3;
 
   // However, it's possible to transfer ownership of unique pointers via
@@ -98,6 +103,9 @@ int main() {
 
   // Now, let's print the x value of u4 to confirm that the change occured, but
   // the ownership of the Point instance has been retained to u4.
+
+  // NOTE: this refinorces the idea that ownership changes are only needed when
+  // doing destructive operations
   std::cout << "Pointer u4's x value is " << u4->GetX() << std::endl;
 
   return 0;

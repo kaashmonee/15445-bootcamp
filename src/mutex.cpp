@@ -22,7 +22,8 @@ std::mutex m;
 
 // The add_count function allows for a thread to increment the count variable
 // by 1, atomically.
-void add_count() {
+void add_count()
+{
   // Acquire the lock before accessing count, the shared resource.
   m.lock();
   count += 1;
@@ -35,7 +36,8 @@ void add_count() {
 // we print the count value, showing that both increments worked successfully.
 // The std::thread library is the C++ STL library used to construct threads.
 // You may view it as a C++ equivalent of the pthread library in C.
-int main() {
+int main()
+{
   std::thread t1(add_count);
   std::thread t2(add_count);
   t1.join();
@@ -44,3 +46,8 @@ int main() {
   std::cout << "Printing count: " << count << std::endl;
   return 0;
 }
+
+// Summary/notes:
+// join just blocks until t1 is done
+// mutex is declared with global scope
+// and then you can just use that anywhere at any time

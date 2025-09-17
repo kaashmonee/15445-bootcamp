@@ -18,7 +18,8 @@
 #include <utility>
 
 // Basic point class. (Will use later)
-class Point {
+class Point
+{
 public:
   Point() : x_(0), y_(0) {}
   Point(int x, int y) : x_(x), y_(y) {}
@@ -38,16 +39,19 @@ void modify_ptr_via_ref(std::shared_ptr<Point> &point) { point->SetX(15); }
 
 // Function that modifies a Point object inside a shared pointer
 // by passing the shared pointer argument as a rvalue reference.
-void modify_ptr_via_rvalue_ref(std::shared_ptr<Point> &&point) {
+void modify_ptr_via_rvalue_ref(std::shared_ptr<Point> &&point)
+{
   point->SetY(645);
 }
 
-void copy_shared_ptr_in_function(std::shared_ptr<Point> point) {
+void copy_shared_ptr_in_function(std::shared_ptr<Point> point)
+{
   std::cout << "Use count of shared pointer is " << point.use_count()
             << std::endl;
 }
 
-int main() {
+int main()
+{
   // This is how to initialize an empty shared pointer of type
   // std::shared_ptr<Point>.
   std::shared_ptr<Point> s1;
@@ -147,3 +151,79 @@ int main() {
 
   return 0;
 }
+
+// NOTE:
+// - why/when the fuck would you ever need multiple objects owning the same memory?
+//   - this is because
+// - why woudl you ever pass a shared pointer by value?
+// - and if you DO pass by value, does that incur a copy of the undelrying memory like with regular pointers?
+// Here's how you would maintain ownership but STILL perform stateful operations:
+// so probably a good pattern is something that looks like this:
+
+/*
+int main() {
+  auto my_data = std::make_unique<std::vector<int>>();
+  // Fuck around with my data
+
+  // Stateful operation
+  // Dereference the pointer and then the callee function determines how
+  // my_data is passed in, which IMO, is fucking stupid
+
+  statefully_do_something_with_my_data(*my_data);
+
+  // Done messing around with my data
+
+  // Relinquish ownership of my_data
+  // Let the cleanup function clear up all the resources
+  // Unique ownership semantics and delete constructor cleans up the underlying
+  // data so everytihng gets taken care of.
+
+  // Generally speaking, if we're using shared pointers, allocation
+  // and destruction should happen explicitly where the programmer can see
+  // This clean up my data function then takes ownership of this data and cleans
+  // everything up, freeing memory
+  clean_up_my_data(std::move(my_data));
+
+  return 0;
+}
+*/
+int main()
+{
+  auto my_data = std::make_unique<std::vector<int>>();
+  // Fuck around with my data
+
+  // Stateful operation
+  // Dereference the pointer and then the callee function determines how
+  // my_data is passed in, which IMO, is fucking stupid
+
+  statefully_do_something_with_my_data(*my_data);
+
+  // Done messing around with my data
+
+  // Do some read only stuff
+  read_only_operation(*my_data);
+
+  // Relinquish ownership of my_data
+  // Let the cleanup function clear up all the resources
+  // Unique ownership semantics and delete constructor cleans up the underlying
+  // data so everytihng gets taken care of.
+
+  // Generally speaking, if we're using shared pointers, allocation
+  // and destruction should happen explicitly where the programmer can see
+  // This clean up my data function then takes ownership of this data and cleans
+  // everything up, freeing memory
+  clean_up_my_data(std::move(my_data));
+
+  return 0;
+}
+
+/*
+void process_data(std::vector<int>& data) {
+  data.push_back(100);
+  // Modify data without ownership concerns
+}
+
+Usage:
+auto my_data = std::make_unique<std::vector<int>>();
+process_data(*my_data);  // No ownership transfer, just modification
+*/

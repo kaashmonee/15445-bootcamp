@@ -23,7 +23,8 @@ std::mutex m;
 
 // The add_count function allows for a thread to increment the count variable
 // by 1, atomically.
-void add_count() {
+void add_count()
+{
   // The constructor of std::scoped_lock allows for the thread to acquire the
   // mutex m.
   std::scoped_lock slk(m);
@@ -33,10 +34,14 @@ void add_count() {
   // in its destructor, the mutex m is released.
 }
 
+// NOTE: why would you use a scoped lock instead of acquiring and releasing the lcok?
+// is the only point of this to avoid accidentally forgetting to release the lock?
+
 // The main method is identical to the one in mutex.cpp. It constructs the
 // thread objects, runs add_count on both threads, and prints the result of
 // count after execution.
-int main() {
+int main()
+{
   std::thread t1(add_count);
   std::thread t2(add_count);
   t1.join();
@@ -45,3 +50,6 @@ int main() {
   std::cout << "Printing count: " << count << std::endl;
   return 0;
 }
+// NOTE:
+// this is basically go's deferred statement
+// great!
